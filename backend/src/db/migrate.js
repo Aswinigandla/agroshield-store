@@ -1,0 +1,7 @@
+import {pool} from './pool.js';
+await pool.query(`CREATE TABLE IF NOT EXISTS users(id SERIAL PRIMARY KEY,name VARCHAR(120) NOT NULL,email VARCHAR(180) UNIQUE NOT NULL,password_hash TEXT NOT NULL,phone VARCHAR(30),role VARCHAR(20) DEFAULT 'farmer',created_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS categories(id SERIAL PRIMARY KEY,name VARCHAR(100) UNIQUE NOT NULL,slug VARCHAR(120) UNIQUE NOT NULL,description TEXT);
+CREATE TABLE IF NOT EXISTS products(id SERIAL PRIMARY KEY,name VARCHAR(180) NOT NULL,slug VARCHAR(200) UNIQUE NOT NULL,category_id INT REFERENCES categories(id),brand VARCHAR(120),image_url TEXT NOT NULL,price NUMERIC(10,2) NOT NULL,discount_price NUMERIC(10,2) NOT NULL,unit VARCHAR(60) NOT NULL,short_description TEXT,description TEXT,stock INT DEFAULT 0,featured BOOLEAN DEFAULT FALSE,created_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS orders(id SERIAL PRIMARY KEY,user_id INT NOT NULL REFERENCES users(id),status VARCHAR(40) DEFAULT 'PLACED',subtotal NUMERIC(10,2) NOT NULL,delivery_fee NUMERIC(10,2) DEFAULT 0,total NUMERIC(10,2) NOT NULL,shipping_name VARCHAR(120) NOT NULL,shipping_phone VARCHAR(30) NOT NULL,shipping_address TEXT NOT NULL,created_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS order_items(id SERIAL PRIMARY KEY,order_id INT REFERENCES orders(id) ON DELETE CASCADE,product_id INT REFERENCES products(id),product_name VARCHAR(180),unit_price NUMERIC(10,2),quantity INT CHECK(quantity>0));`);
+console.log('migration complete'); await pool.end();

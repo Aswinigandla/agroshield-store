@@ -1,0 +1,8 @@
+import {pool} from './pool.js'; import bcrypt from 'bcryptjs';
+await pool.query('TRUNCATE order_items,orders,products,categories,users RESTART IDENTITY CASCADE');
+const cats=[['Insect & Pest Control','insect-pest'],['Fungal Disease Care','fungal'],['Bacterial Disease Care','bacterial'],['Weed Management','weed'],['Plant Nutrition','nutrition']];
+for(const c of cats) await pool.query('INSERT INTO categories(name,slug) VALUES($1,$2)',c);
+const img='https://images.unsplash.com/photo-1492496913980-501348b61469?auto=format&fit=crop&w=900&q=80';
+const ps=[['Neem Guard','neem-guard',1,'AgroShield',699,549,'1 L','Botanical crop-protection demo product',true],['Pest Secure','pest-secure',1,'KisanPro',899,749,'500 ml','Demo pest-management product',true],['FungiCare Protect','fungicare-protect',2,'FungiCare',1299,1049,'1 L','Demo fungal-care product',true],['BactoSafe Crop Care','bactosafe',3,'BactoSafe',1099,899,'1 kg','Demo bacterial-care product',false],['WeedClear Farm','weedclear',4,'FarmPlus',799,679,'1 L','Demo weed-management product',false],['MicroGrow Zinc','microgrow-zinc',5,'MicroGrow',499,399,'1 kg','Demo micronutrient product',true]];
+for(const p of ps) await pool.query(`INSERT INTO products(name,slug,category_id,brand,image_url,price,discount_price,unit,short_description,description,stock,featured) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$9,$10,$11)`,[p[0],p[1],p[2],p[3],img,p[4],p[5],p[6],p[7],100,p[8]]);
+const h=await bcrypt.hash('Farmer@123',12); await pool.query('INSERT INTO users(name,email,password_hash,phone) VALUES($1,$2,$3,$4)',['Demo Farmer','farmer@agroshield.demo',h,'9876543210']); console.log('seed complete'); await pool.end();

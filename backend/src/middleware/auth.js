@@ -1,0 +1,2 @@
+import jwt from 'jsonwebtoken'; import {pool} from '../db/pool.js';
+export async function auth(req,res,next){try{const t=req.headers.authorization?.replace('Bearer ','');if(!t)throw 0;const p=jwt.verify(t,process.env.JWT_SECRET);const {rows}=await pool.query('SELECT id,name,email,phone,role FROM users WHERE id=$1',[p.id]);if(!rows[0])throw 0;req.user=rows[0];next()}catch{res.status(401).json({message:'Authentication required'})}}
